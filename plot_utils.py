@@ -21,8 +21,6 @@ def plot_grid(array_3d, save_path=None):
         layer_data = array_3d[i]
         ax = axes[i]
         ax.set_title(f'Layer {i + 1}')
-        ax.set_xlabel('X-axis')
-        ax.set_ylabel('Y-axis')
 
         # Create a custom colormap based on block_colors
         cmap = ListedColormap([REACTOR_BLOCK_COLOR.get(key, 'white') for key in range(-1, 17)])
@@ -38,9 +36,11 @@ def plot_grid(array_3d, save_path=None):
                 ax.text(x, y, label, ha='center', va='center', color='black', fontsize=10)
 
         # Add colorbar
-        cbar = fig.colorbar(im, ax=ax, ticks=np.arange(-1, 17))
-        cbar.ax.set_yticklabels([REACTOR_BLOCK_ID.get(j, str(j)) for j in range(-1, 17)])
-
+        #cbar = fig.colorbar(im, ax=ax, ticks=np.arange(-1, 17))
+        #cbar.ax.set_yticklabels([REACTOR_BLOCK_ID.get(j, str(j)) for j in range(-1, 17)])
+        ax.set_xticks([])
+        ax.set_yticks([])
+        
     plt.tight_layout()
     
     # Save or show plot
