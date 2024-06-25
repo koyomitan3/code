@@ -35,6 +35,7 @@ def plot_grid(array_3d, save_path=None):
                 label = REACTOR_BLOCK_ID.get(value, str(value))
                 ax.text(x, y, label, ha='center', va='center', color='black', fontsize=10)
 
+
         # Add colorbar
         #cbar = fig.colorbar(im, ax=ax, ticks=np.arange(-1, 17))
         #cbar.ax.set_yticklabels([REACTOR_BLOCK_ID.get(j, str(j)) for j in range(-1, 17)])

@@ -1,3 +1,6 @@
+import numpy as np
+
+
 REACTOR_BLOCK_ID = {
     -1: "C",  # Reactor Casing
     0 : "0",  # Air
@@ -40,4 +43,163 @@ REACTOR_BLOCK_COLOR = {
     15:'orange',        # Copper
     16:'brown',         # Tin
     17:'darkcyan'       # Magnesium
+}
+
+
+# Units in order: H/t, s, s, RF, RF/t
+
+REACTOR_FUEL_TYPE = {
+    "TBU": {
+        "heat_gen": 18,
+        "fuel_pellet_duration": 7200,
+        "meltdown_time": 1875,
+        "energy_per_pellet": 8640000,
+        "energy_gen": 60
+    },
+    "TBU-Oxide": {
+        "heat_gen": 200,
+        "fuel_pellet_duration": 200,
+        "meltdown_time": 400,
+        "energy_per_pellet": 75,
+        "energy_gen": 1500
+    },
+    "LEU-233": {
+        "heat_gen": 150,
+        "fuel_pellet_duration": 400,
+        "meltdown_time": 600,
+        "energy_per_pellet": 60,
+        "energy_gen": 1200
+    },
+    "LEU-233-Oxide": {
+        "heat_gen": 250,
+        "fuel_pellet_duration": 100,
+        "meltdown_time": 300,
+        "energy_per_pellet": 90,
+        "energy_gen": 2000
+    },
+    "LEU-235": {
+        "heat_gen": 50,
+        "fuel_pellet_duration": 3600,
+        "meltdown_time": 450,
+        "energy_per_pellet": 8640000,
+        "energy_gen": 120
+    }
+}
+
+
+REACTOR_BLOCK_PROPERTIES = {
+    -1: {
+        'cooling_value': 0,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    0: {
+        'cooling_value': 0,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    1: {
+        'cooling_value': 0,   # Placeholder
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 1
+    },
+    2: {
+        'cooling_value': 0,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    3: {
+        'cooling_value': 60,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    4: {
+        'cooling_value': 90,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    5: {
+        'cooling_value': 90,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    6: {
+        'cooling_value': 120,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    7: {
+        'cooling_value': 130,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    8: {
+        'cooling_value': 120,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    9: {
+        'cooling_value': 150,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    10: {
+        'cooling_value': 140,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    11: {
+        'cooling_value': 120,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    12: {
+        'cooling_value': 160,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    13: {
+        'cooling_value': 80,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    14: {
+        'cooling_value': 160,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    15: {
+        'cooling_value': 80,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    16: {
+        'cooling_value': 120,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    },
+    17: {
+        'cooling_value': 110,
+        'heat_gen': 0,
+        'energy_gen': 0,
+        'efficiency': 0
+    }
 }
