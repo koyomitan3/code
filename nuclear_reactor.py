@@ -18,12 +18,14 @@ def get_neighbors(array, x, y, z):
     return neighbors
 
 @njit
-def is_valid(element, neighbors):
+def is_valid(element, neighbors, for_replacement=False):
     neighbor_counts = np.zeros(18, dtype=np.int8)
     for neighbor in neighbors:
         neighbor_counts[neighbor] += 1
     
     if element == 0:  # Air, any
+        return True 
+    elif element == -1:
         return True
     elif element == 1:  # Reactor Cell, any
         return True
@@ -62,8 +64,10 @@ def is_valid(element, neighbors):
                  neighbors[4] == neighbors[5] == 8))
     elif element == 17:  # Placeholder
         return neighbor_counts[-1] > 0 and neighbor_counts[2] > 0
+    elif element > 17:
+        return False
     else:
-        return True  # Reactor Casings for later
+        return False  # Reactor Casings for later
 
 @njit
 def validate_array(array):
@@ -78,4 +82,41 @@ def validate_array(array):
                     if not is_valid(element, neighbors):
                         array[x, y, z] = 0  # Mark as invalid
                         changes = True
+                        validate_array(array)
     return array
+
+
+
+@njit
+def is_array_valid(array):
+    """
+    Checks if a 3D NumPy array representing a reactor design is valid.
+
+    Args:
+        array (np.ndarray): The 3D NumPy array to validate.
+
+    Returns:
+        bool: True if the array is valid, False otherwise.
+    """
+    for x in range(array.shape[0]):
+        for y in range(array.shape[1]):
+            for z in range(array.shape[2]):
+                element = array[x, y, z]
+                neighbors = get_neighbors(array, x, y, z)
+                if not is_valid(element, neighbors) or np.sum(array) == 0:
+                    return False
+    return True
+
+valid_array_zeroes = np.array([[
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]],
+
+        [[0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]],
+
+        [[0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]]], dtype=int)
+print(is_array_valid(valid_array_zeroes))

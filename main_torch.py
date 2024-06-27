@@ -8,14 +8,27 @@ from nuclear_reactor import validate_array
 from plot_utils import plot_grid
 import time
 from converters import pad_array
+import random
 
 torch.set_default_device('cuda')
 
+
+
+def generate_random_size():
+    # Generate random dimensions a, b, c
+    a = random.randint(3, 5)
+    b = random.randint(3, 5)
+    c = random.randint(3, 5)
+    
+    # Return the tuple (a, b, c)
+    return (a, b, c)
+
+
 # Constants
-SIZE = (3, 3, 3)
+SIZE = generate_random_size()
 CURRENT_FUEL = "TBU"
 POPULATION_SIZE = 100
-GENERATIONS = 500
+GENERATIONS = 10
 MUTATION_RATE = 0.11
 CROSSOVER_RATE = 0.04
 TOURNAMENT_SIZE = 5
@@ -46,7 +59,7 @@ class PolicyNetwork(nn.Module):
 
 # Initialize the policy network and optimizer
 policy_network = PolicyNetwork()
-optimizer = optim.Adam(policy_network.parameters(), lr=0.001)
+optimizer = optim.Adam(policy_network.parameters(), lr=0.01)  # Adam optimizer
 
 def generate_population(size):
     population = [np.zeros(SIZE, dtype=int) for _ in range(size)]
@@ -82,13 +95,16 @@ def tournament_selection(population, fitnesses):
     return population[best]
 
 # Function to run the DRL-based optimization
-def run_drl_optimization():
+def run_drl_optimization(population_size=0, generations=0, progress_function=None):
+    epoch = 0
     t1 = time.perf_counter()
-    population = generate_population(POPULATION_SIZE)
+    population = generate_population(population_size)
     best_individual = None
     best_fitness = -float('inf')
 
-    for generation in range(GENERATIONS):
+    for g in range(generations):
+        epoch += 1
+        print(f"Generation: {epoch}")
         new_population = []
         fitnesses = [fitness(individual) for individual in population]
 
@@ -103,20 +119,29 @@ def run_drl_optimization():
                 parent1 = tournament_selection(population, fitnesses)
                 parent2 = tournament_selection(population, fitnesses)
                 crossover_individual = crossover(parent1, parent2)
-                # Assign mutated_individual before the conditional expression:
                 mutated_individual = mutate(crossover_individual) if np.random.rand() < action_prob.item() else crossover_individual
 
             try:
                 validate_array(mutated_individual)
             except Exception as e:
-                print(f"Validation error in generation {generation}, replacing invalid child: {e}")
-                mutated_individual = generate_population(POPULATION_SIZE)
+                print(f"Validation error in generation {g}, replacing invalid child: {e}")
+                mutated_individual = generate_population(population_size)
 
             new_population.append(mutated_individual)
 
         population = new_population
-        best_fitness = max(fitnesses)
-        average_fitness = sum(fitnesses) / len(fitnesses)
+
+        # Convert fitnesses to tensor with gradients enabled
+        fitness_tensor = torch.tensor(fitnesses, dtype=torch.float32, requires_grad=True)
+        
+        # Optimize the policy network using Adam optimizer
+        optimizer.zero_grad()
+        loss = -fitness_tensor.mean()  # Negative fitness for maximizing
+        loss.backward()
+        optimizer.step()
+
+        # Update best fitness found
+        best_fitness = fitness_tensor.max().item()
 
     # Return the best solution found
     best_index = np.argmax(fitnesses)
@@ -132,7 +157,6 @@ def run_drl_optimization():
     # Additional optional: Plotting and metrics display
     print(reactor_metrics(new_matrix, CURRENT_FUEL))
     plot_grid(new_matrix, 'new_array_cuda.png')
-    print(f"Saved to {plot_grid.__name__}")
+    print(f"Saved to 'new_array_cuda.png")
 
-# Run the DRL-based optimization
-run_drl_optimization()
+#run_drl_optimization(population_size=POPULATION_SIZE, generations=50)
