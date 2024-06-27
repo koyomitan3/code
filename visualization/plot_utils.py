@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-import numpy as np
-from constants import REACTOR_BLOCK_ID, REACTOR_BLOCK_COLOR
+from utils.constants import REACTOR_BLOCK_ID, REACTOR_BLOCK_COLOR
+
 
 def plot_grid(array_3d, save_path=None):
     num_layers = array_3d.shape[0]  # Number of layers

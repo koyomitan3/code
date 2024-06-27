@@ -106,17 +106,3 @@ def is_array_valid(array):
                 if not is_valid(element, neighbors) or np.sum(array) == 0:
                     return False
     return True
-
-valid_array_zeroes = np.array([[
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]],
-
-        [[0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]],
-
-        [[0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]]], dtype=int)
-print(is_array_valid(valid_array_zeroes))

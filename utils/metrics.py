@@ -1,6 +1,6 @@
 from numba import njit
 import numpy as np
-from constants import REACTOR_BLOCK_PROPERTIES, REACTOR_FUEL_TYPE
+from .constants import REACTOR_BLOCK_ID, REACTOR_BLOCK_COLOR, REACTOR_FUEL_TYPE, REACTOR_BLOCK_PROPERTIES
 
 @njit
 def count_neighbors(array, x, y, z, element):

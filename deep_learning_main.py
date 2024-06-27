@@ -178,7 +178,8 @@ def run_drl_optimization(target_size, fuel, population_size=100, generations=50,
 
     for _ in range(generations):
         epoch += 1
-        print(f"Generation: {epoch}")
+        if epoch % 10 == 0 or epoch == generations:
+            print(f"Generation: {epoch}/{generations} ({int(epoch / generations * 100)}%)")
         new_population = []
         fitnesses = [] 
         total_rewards = []  # Store rewards for the generation
