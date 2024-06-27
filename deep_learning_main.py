@@ -3,14 +3,17 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from metrics import reactor_metrics
-from plot_utils import plot_grid
 import time
 import random
-from nuclear_reactor import is_array_valid, is_valid, get_neighbors
-torch.set_default_device('cuda')
 
+# Custom Imports
+from utils.metrics import reactor_metrics
+from visualization.plot_utils import plot_grid
+from core.nuclear_reactor import is_array_valid, is_valid, get_neighbors
 
+# Set the default device for PyTorch
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.set_default_device(device)
 
 def generate_random_size():
     # Generate random dimensions a, b, c
@@ -20,7 +23,6 @@ def generate_random_size():
     
     # Return the tuple (a, b, c)
     return (a, b, c)
-
 
 # Constants
 #SIZE = generate_random_size()

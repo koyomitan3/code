@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from nuclear_reactor import is_array_valid, is_valid, validate_array, get_neighbors  # Import your functions
+from ..core.nuclear_reactor import is_array_valid, validate_array  # Import your functions
 
 class TestReactorValidation(unittest.TestCase):
 
