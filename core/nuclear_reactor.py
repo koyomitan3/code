@@ -89,15 +89,6 @@ def validate_array(array):
 
 @njit
 def is_array_valid(array):
-    """
-    Checks if a 3D NumPy array representing a reactor design is valid.
-
-    Args:
-        array (np.ndarray): The 3D NumPy array to validate.
-
-    Returns:
-        bool: True if the array is valid, False otherwise.
-    """
     for x in range(array.shape[0]):
         for y in range(array.shape[1]):
             for z in range(array.shape[2]):

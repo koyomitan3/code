@@ -1,5 +1,5 @@
 import numpy as np
-from constants import REACTOR_BLOCK_ID
+from utils.constants import REACTOR_BLOCK_ID
 
 
 def convert_array(array):

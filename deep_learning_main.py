@@ -10,7 +10,7 @@ import random
 from utils.metrics import reactor_metrics
 from visualization.plot_utils import plot_grid
 from core.nuclear_reactor import is_array_valid, is_valid, get_neighbors
-
+from utils.converters import pad_array
 # Set the default device for PyTorch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.set_default_device(device)
@@ -28,11 +28,11 @@ def generate_random_size():
 #SIZE = generate_random_size()
 SIZE =  (3, 3, 3)
 CURRENT_FUEL = "TBU"
-POPULATION_SIZE = 100
-GENERATIONS = 10
+POPULATION_SIZE = 10
+GENERATIONS = 1000
 MUTATION_RATE = 0.11
 CROSSOVER_RATE = 0.04
-TOURNAMENT_SIZE = 5
+TOURNAMENT_SIZE = 7
 
 def save_model(model, optimizer, epoch, path='underhaul_optimizer.pth'):
     torch.save({
@@ -86,8 +86,14 @@ class PolicyNetwork(nn.Module):
 
 
 def generate_population(size, target_size):
-    population = [np.zeros(target_size, dtype=int) for _ in range(size)]
-    return population
+    # Create a single array of zeros with target_size
+    population = np.zeros(target_size, dtype=int)
+    
+    # Repeat the population array 'size' times along a new axis
+    new_population = np.repeat(population[np.newaxis, :], size, axis=0)
+    
+    return new_population
+
 def fitness(individual, fuel):
     metrics = reactor_metrics(individual, fuel)
 
@@ -157,10 +163,11 @@ def crossover(parent1, parent2):
 def tournament_selection(population, fitnesses):
     selected = [np.random.randint(0, len(population)) for _ in range(TOURNAMENT_SIZE)]
     best = sorted(selected, key=lambda idx: fitnesses[idx], reverse=True)[0]
+    print(best)
     return population[best]
 
 # Function to run the DRL-based optimization
-def run_drl_optimization(target_size, fuel, population_size=100, generations=50, progress_function=None):
+def run_drl_optimization(target_size, fuel, population_size=100, generations=50):
     epoch = 0
     t1 = time.perf_counter()
 
@@ -201,6 +208,21 @@ def run_drl_optimization(target_size, fuel, population_size=100, generations=50,
 
         best_fitness = fitness_tensor.max().item()
 
+    if best_individual is not None:
+        best_metrics = reactor_metrics(best_individual, fuel)
+        print(f"Best fitness found: {int(best_fitness)}")
+        print("Metrics:")
+        for key, value in best_metrics.items():
+            print(f"  {key}: {value}")
+
+        imagePath = 'visualization/img'  # Update your save directory path
+        plot_grid(best_individual, imagePath, calling_file='deep_learning_main', score=int(best_fitness))
+        print(f"Saved visualization to {imagePath}")
+        return best_individual if is_array_valid(best_individual) else None
+    else:
+        print("No valid solution found.")
+        return None
+
     best_index = np.argmax(fitnesses)
     best_individual = population[best_index]
     best_metrics = reactor_metrics(best_individual, fuel)
@@ -216,12 +238,13 @@ def run_drl_optimization(target_size, fuel, population_size=100, generations=50,
     for key, value in best_metrics.items():
         print(f"  {key}: {value}")
 
-    plot_grid(best_individual, 'new_array_cuda.png')
-    print(f"Saved to new_array_cuda.png")
+    imagePath = 'visualization/img'  # Update your save directory path
+    plot_grid(best_individual, imagePath, calling_file='deep_learning_main', score=int(best_fitness))
+    print(f"Saved to {imagePath}")
     return best_individual if is_array_valid(best_individual) else None
 
 
 
 
 
-run_drl_optimization(SIZE, CURRENT_FUEL, population_size=POPULATION_SIZE, generations=50)
+run_drl_optimization(SIZE, CURRENT_FUEL, population_size=POPULATION_SIZE, generations=GENERATIONS)
