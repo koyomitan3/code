@@ -19,7 +19,7 @@ def get_neighbors(array, x, y, z):
 
 @njit
 def is_valid(element, neighbors):
-    neighbor_counts = np.zeros(18, dtype=np.int32)
+    neighbor_counts = np.zeros(18, dtype=np.int8)
     for neighbor in neighbors:
         neighbor_counts[neighbor] += 1
     

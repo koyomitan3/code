@@ -16,20 +16,21 @@ CURRENT_FUEL = "TBU"
 
 @njit
 def generate_array():
-    return np.random.randint(1, 17, SIZE)
+    return np.random.randint(0, 18, SIZE)
 
 @njit
 def initialize_population(size):
     return [generate_array() for _ in range(size)] 
 
-
 def fitness(individual):
     validate_array(individual)
     metrics = reactor_metrics(individual, CURRENT_FUEL)
+    score = (1.9 * metrics['energy_gen']) + 0.8 * metrics['heat_gen'] + (metrics['heat_diff'] * -1) + 1.3 * (metrics['efficiency'] / 100)
     if metrics['heat_diff'] > 0:
         return 0
     else:
-        return (1.9 * metrics['energy_gen']) + 0.8 * metrics['heat_gen'] + (metrics['heat_diff'] * -1) + 1.3 * (metrics['efficiency'] / 100)
+        print(score)
+        return score
 
 
 def tournament_selection(population, fitnesses):

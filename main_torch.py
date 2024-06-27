@@ -49,7 +49,7 @@ policy_network = PolicyNetwork()
 optimizer = optim.Adam(policy_network.parameters(), lr=0.001)
 
 def generate_population(size):
-    population = [np.random.randint(0, 18, SIZE) for _ in range(size)]
+    population = [np.zeros(SIZE, dtype=int) for _ in range(size)]
     return population
 
 def fitness(individual):
