@@ -4,7 +4,6 @@ from numba import njit
 @njit
 def get_neighbors(array, x, y, z):
     neighbors = np.empty(6, dtype=array.dtype)
-    # Define the six possible moves (up, down, left, right, front, back)
     directions = np.array([(-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1)])
     
     for i, direction in enumerate(directions):
@@ -18,71 +17,71 @@ def get_neighbors(array, x, y, z):
     return neighbors
 
 @njit
-def is_valid(element, neighbors, for_replacement=False):
-    neighbor_counts = np.zeros(18, dtype=np.int8)
-    for neighbor in neighbors:
-        neighbor_counts[neighbor] += 1
+def is_valid(element, neighbors):
+    neighbor_counts = np.bincount(neighbors[neighbors >= 0], minlength=18)
     
-    if element == 0:  # Air, any
-        return True 
-    elif element == -1:
+    if element == 0 or element == -1:
         return True
-    elif element == 1:  # Reactor Cell, any
+    elif element == 1:
         return True
-    elif element == 2:  # Moderator, must be active
+    elif element == 2:
         return neighbor_counts[1] >= 1
-    elif element == 3:  # Water, at least one Reactor Cell or active Moderator
+    elif element == 3:
         return neighbor_counts[1] > 0 or neighbor_counts[2] > 0
-    elif element == 4:  # Redstone ...
+    elif element == 4:
         return neighbor_counts[1] > 0
-    elif element == 5:  # Quartz
-        return neighbor_counts[2] > 0 
-    elif element == 6:  # Gold
+    elif element == 5:
+        return neighbor_counts[2] > 0
+    elif element == 6:
         return neighbor_counts[3] > 0 and neighbor_counts[4] > 0
-    elif element == 7:  # Glowstone
+    elif element == 7:
         return neighbor_counts[2] >= 2
-    elif element == 8:  # Lapis
+    elif element == 8:
         return neighbor_counts[1] > 0 and neighbor_counts[-1] > 0
-    elif element == 9:  # Diamond
+    elif element == 9:
         return neighbor_counts[3] > 0 and neighbor_counts[5] > 0
-    elif element == 10:  # Helium
+    elif element == 10:
         return neighbor_counts[4] == 1 and neighbor_counts[-1] > 0
-    elif element == 11:  # Enderium
+    elif element == 11:
         return neighbor_counts[-1] >= 3
-    elif element == 12:  # Cryotheum
+    elif element == 12:
         return neighbor_counts[1] >= 2
-    elif element == 13:  # Iron
+    elif element == 13:
         return neighbor_counts[6] > 0
-    elif element == 14:  # Emerald
+    elif element == 14:
         return neighbor_counts[2] > 0 and neighbor_counts[-1] > 0
-    elif element == 15:  # Copper
+    elif element == 15:
         return neighbor_counts[7] > 0
-    elif element == 16:  # Tin for two lapis on opposite sides in the same axis
+    elif element == 16:
         return (neighbor_counts[8] >= 2 and 
                 (neighbors[0] == neighbors[1] == 8 or 
                  neighbors[2] == neighbors[3] == 8 or 
                  neighbors[4] == neighbors[5] == 8))
-    elif element == 17:  # Placeholder
+    elif element == 17:
         return neighbor_counts[-1] > 0 and neighbor_counts[2] > 0
-    elif element > 17:
-        return False
     else:
-        return False  # Reactor Casings for later
+        return False
 
 @njit
 def validate_array(array):
+    queue = [(x, y, z) for x in range(array.shape[0]) for y in range(array.shape[1]) for z in range(array.shape[2])]
     changes = True
+    
     while changes:
         changes = False
-        for x in range(array.shape[0]):
-            for y in range(array.shape[1]):
-                for z in range(array.shape[2]):
-                    element = array[x, y, z]
-                    neighbors = get_neighbors(array, x, y, z)
-                    if not is_valid(element, neighbors):
-                        array[x, y, z] = 0  # Mark as invalid
-                        changes = True
-                        validate_array(array)
+        next_queue = []
+        
+        for x, y, z in queue:
+            element = array[x, y, z]
+            neighbors = get_neighbors(array, x, y, z)
+            
+            if not is_valid(element, neighbors):
+                array[x, y, z] = 0  # Mark as invalid
+                changes = True
+                next_queue.extend([(x, y, z)])
+        
+        queue = next_queue
+    
     return array
 
 
@@ -94,6 +93,8 @@ def is_array_valid(array):
             for z in range(array.shape[2]):
                 element = array[x, y, z]
                 neighbors = get_neighbors(array, x, y, z)
-                if not is_valid(element, neighbors) or np.sum(array) == 0:
+                if not is_valid(element, neighbors):
                     return False
     return True
+
+
