@@ -391,7 +391,7 @@ def run_drl_optimization(target_size,
             save_model(policy_network, 'models')
         if epoch % 100 == 0:
             plot_grid(best_individual,
-                    IMAGE_PATH,
+                    '.',
                     calling_file='VALID_SOLUTION',
                     score=int(best_fitness))
     # After all generations, determine the best individual and its metrics
