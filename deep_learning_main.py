@@ -389,11 +389,6 @@ def run_drl_optimization(target_size,
             save_checkpoint(epoch, policy_network, optimizer, population,
                             best_individual, best_fitness)
             save_model(policy_network, 'models')
-        if epoch % 100 == 0:
-            plot_grid(best_individual,
-                    '.',
-                    calling_file='VALID_SOLUTION',
-                    score=int(best_fitness))
     # After all generations, determine the best individual and its metrics
     if best_individual is None:
         print("No valid solution found.")
@@ -411,13 +406,7 @@ def run_drl_optimization(target_size,
         print("Metrics:")
         for key, value in best_metrics.items():
             print(f"  {key.upper()}: {value}")
-        imagePath = 'visualization/img'  # Update your save directory path
-        plot_grid(best_individual,
-                  imagePath,
-                  calling_file='VALID_SOLUTION',
-                  score=int(best_fitness))
-        print(f"Saved to {imagePath}")
-        return best_individual
+        #
     else:
         print(f"\033[91mBest fitness: {int(best_fitness)}\033[0m")
         print(f"Time taken {time.perf_counter() - t1} seconds")
@@ -425,11 +414,8 @@ def run_drl_optimization(target_size,
         print("Metrics:")
         for key, value in best_metrics.items():
             print(f"  {key.upper()}: {value}")
-        imagePath = 'visualization/img'
-        plot_grid(best_individual,
-                  imagePath,
-                  calling_file='INVALID_SOLUTION',
-                  score=int(best_fitness))
+        #imagePath = 'visualization/img'
+        #
         return None
 
 
