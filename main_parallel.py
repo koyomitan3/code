@@ -1,7 +1,7 @@
 import numpy as np
-from metrics import reactor_metrics
-from plot_utils import plot_grid
-from nuclear_reactor import validate_array
+from utils.metrics import reactor_metrics
+from visualization.plot_utils import plot_grid
+from core.nuclear_reactor import validate_array
 import time
 from multiprocessing import Pool, cpu_count
 

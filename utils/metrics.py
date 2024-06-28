@@ -51,6 +51,7 @@ def reactor_metrics(array, fuel):
     total_fuel_cells = 0
     total_neighbor = 0.0
     total_heat_multiplier = 0.0
+    total_energy_multiplier = 0.0
     power = 0.0
     heat = 0.0
     total_cooling = 0.0
@@ -67,25 +68,21 @@ def reactor_metrics(array, fuel):
                         mod = count_neighbors(array, x, y, z, 2)
                         base_energy_gen = REACTOR_FUEL_TYPE[fuel]['energy_gen']
                         base_heat_gen = REACTOR_FUEL_TYPE[fuel]['heat_gen']
-                        if adjacent_cells > 0:
-                            energy_multiplier = (adjacent_cells + 1) * base_energy_gen
-                            power += energy_multiplier
-                            heat_multiplier = (adjacent_cells + 1) * (adjacent_cells + 2) / 2 * base_heat_gen
-                            heat += heat_multiplier
-                            total_neighbor += adjacent_cells + 1
-                            total_heat_multiplier += (adjacent_cells + 1) * (adjacent_cells + 2) / 2
-                        elif adjacent_cells == 0 and mod == 0:
-                            power += base_energy_gen
-                            heat += base_heat_gen
-                            total_neighbor += 1
-                            total_heat_multiplier += 1 * 2 / 2
-                        elif mod > 0:
-                            energy_multiplier = base_energy_gen * (1 + (mod / 6))
-                            power += energy_multiplier
-                            heat_multiplier = base_heat_gen * (1 + (mod / 3))
-                            heat += heat_multiplier
-                            total_neighbor += (1 + (mod / 6))
-                            total_heat_multiplier += (1 + (mod / 3))
+                        total_neighbor += adjacent_cells + 1
+                        total_heat_multiplier += (adjacent_cells + 1) * (adjacent_cells + 2) / 2
+                        # cell adjacency multiplier
+                        energy_multiplier = 1 + adjacent_cells
+                        heat_multiplier = (adjacent_cells + 1)*(adjacent_cells + 2)/2
+
+                        # moderator multiplier 
+                        energy_multiplier += mod/6
+                        heat_multiplier += mod/3
+
+                        power += energy_multiplier * base_energy_gen
+                        heat += heat_multiplier * base_heat_gen
+
+                        total_energy_multiplier += energy_multiplier
+                        total_heat_multiplier += heat_multiplier
 
     efficiency = 100 * total_neighbor / total_fuel_cells if total_fuel_cells != 0 else 0
     heat_multiplier = 100 * total_heat_multiplier / total_fuel_cells if total_fuel_cells != 0 else 0
